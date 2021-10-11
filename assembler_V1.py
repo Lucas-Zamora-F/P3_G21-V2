@@ -147,7 +147,6 @@ def instruction_validator (instruction, len_instuctions, opc):
 def output_file_writer(new_instrucitons, opc):
     file = open('out.txt', 'w')
     for instruction in new_instrucitons:
-        print(f'1.- {instruction}')
         ins_trans = instruction[0]+' '
         if type(instruction[1]) is list :
             arg = ','.join(instruction[1])
@@ -155,7 +154,6 @@ def output_file_writer(new_instrucitons, opc):
             arg = instruction[1]
         
         ins_trans += arg
-        print(ins_trans)
         file.write(opc[ins_trans])
         file.write("\n")
     file.close()
@@ -183,8 +181,7 @@ def dir_int_changer(instruction):
 def main():
     errors = 0
     opc = opcodes()
-    print(opc.keys())
-    instructions = text_reader('p3_1-correccion1.ass')
+    instructions = text_reader('p3-ej_incorrecto (1).ass')
     len_instructions = len(instructions)
     count = 1
     for instruction in instructions:
@@ -197,7 +194,6 @@ def main():
         new_instrucitons = []
         for instruction in instructions:
             new_instrucitons.append(dir_int_changer(instruction))
-        print(new_instrucitons)
         output_file_writer(new_instrucitons, opc)
 
             
