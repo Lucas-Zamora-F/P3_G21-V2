@@ -1,15 +1,45 @@
+import re
 def text_reader (text_name):
     file = open(text_name)
     lines = file.readlines()
+    data = []
     instructions = []
-    for i in lines:
-        i = i.split()
-        if len(i) == 2:
-            if ',' in i[1]:
-                i[1] = i[1].split(',')
+    is_data = False
+    is_code = True
+    for line in lines:
+        if 'DATA:' in line:
+            is_data = True
+            is_code = False
+        elif 'CODE:' in line:
+            is_code = True
+            is_data = False
+        elif is_data == True:
+            line = line.split(' ')
+            line.pop(0)
+            line.pop(0)
+            word = line[1]
+            word = re.sub('\n', '',word)
+            line.pop(1)
+            line.append(word)
+            data.append(line)
+        elif is_code == True:
+            line = line.split()
+            if len(line) == 2:
+                if ',' in line[1]:
+                    line[1] = line[1].split(',')
+            instructions.append(line)
+    return instructions, data
 
-        instructions.append(i)
-    return instructions
+def jump_dic (instructions):
+    jumps = {}
+    for line in instructions:
+        if ':' in line[0]:
+            index = instructions.index(line)
+            word = line[0]
+            word = re.sub(':', '',word)
+            jumps[word] = index
+            instructions.pop(index)
+    return jumps
 
 def hex_to_dec(string):
     if type(string) == str:
@@ -69,10 +99,10 @@ def instruction_validator (instruction, len_instuctions, opc):
             'CALL','RET','PUSH','POP']
     
     if len(instruction) == 2:
-        if  "#" in instruction[1]:
-            arg = str(instruction[1])
-        elif type(instruction[1]) is list:
+        if type(instruction[1]) is list:
             arg = ','.join(instruction[1])
+        elif  "#" in instruction[1]:
+            arg = str(instruction[1])
         else: 
             arg = str(instruction[1])
         if instruction[0] not in operations:
@@ -80,7 +110,7 @@ def instruction_validator (instruction, len_instuctions, opc):
     
     # number of arguments
     if instruction[0] == 'INC':
-        if len(instruction[1]) != 1 and instruction[1] != '(B)' and instruction[1] != '(Dir)':
+        if len(instruction[1]) != 1 and '(' not in instruction[1] :
             return f'Instruccion invalida (Cantidad de argumentos): {ins_trans}{arg}'
     if instruction[0] == 'MOV' or instruction[0] == 'CMP':
         if len(instruction[1]) != 2:
@@ -144,21 +174,6 @@ def instruction_validator (instruction, len_instuctions, opc):
     else:
         return f'Instruccion no existe: {ins_trans}'
 
-def output_file_writer(new_instrucitons, opc):
-    file = open('out.txt', 'w')
-    for instruction in new_instrucitons:
-        ins_trans = instruction[0]+' '
-        if type(instruction[1]) is list :
-            arg = ','.join(instruction[1])
-        else:
-            arg = instruction[1]
-        
-        ins_trans += arg
-        file.write(opc[ins_trans])
-        file.write("\n")
-    file.close()
-   
-
 def dir_int_changer(instruction):
     if 'J' in instruction[0]:
         instruction.pop(1)
@@ -177,11 +192,79 @@ def dir_int_changer(instruction):
                     instruction[1].insert(i, 'Lit') 
     return instruction
 
+def output_file_writer(new_instrucitons, opc):
+    file = open('out.out', 'w')
+    for instruction in new_instrucitons:
+        ins_trans = instruction[0]+' '
+        if type(instruction[1]) is list :
+            arg = ','.join(instruction[1])
+        else:
+            arg = instruction[1]
+        
+        ins_trans += arg
+        file.write(opc[ins_trans])
+        file.write("\n")
+    file.close()
+
+def directions_changer(instructions, data, jumps):
+    for instruction in instructions:
+        direction = False
+        
+        if type(instruction[1]) is list:
+            for arg in instruction[1]:
+                i = instruction[1].index(arg)
+                if '(' in arg:
+                    direction = True
+                arg = re.sub('\(|\)', '', arg)
+                
+                for dat in data:
+                    
+                    if dat[0] == arg:
+                        if direction == True:
+                            new_arg = '('+dat[1]+')'
+                            instruction[1].pop(i)
+                            instruction[1].insert(i, new_arg)
+                        else:
+                            new_arg = data[1]
+                            i = instruction[1].index(arg)
+                            instruction[1].pop(i)
+                            instruction[1].insert(i, new_arg)
+    
+        elif 'J' in instruction[0]:
+            try: 
+                if jumps[instruction[1]]:
+                    arg = jumps[instruction[1]]
+                    instruction.pop(1)
+                    instruction.append(str(arg))
+            except:
+                pass
+        
+        else:
+            arg = instruction[1]
+            if '(' in arg:
+                direction = True
+            arg = re.sub('\(|\)', '', arg)
+                
+            for dat in data:
+                    
+                if dat[0] == arg:
+                    if direction == True:
+                        new_arg = '('+dat[1]+')'
+                        instruction.pop(1)
+                        instruction.insert(1, new_arg)
+                    else:
+                        new_arg = data[1]
+                        i = instruction.index(arg)
+                        instruction.pop(1)
+                        instruction.insert(1, new_arg)
+
 
 def main():
     errors = 0
     opc = opcodes()
-    instructions = text_reader('p3_1-correccion1.ass')
+    instructions, data = text_reader('p3_1-correccion1.ass')
+    jumps = jump_dic(instructions)
+    directions_changer(instructions, data, jumps)
     len_instructions = len(instructions)
     count = 1
     for instruction in instructions:
@@ -195,8 +278,5 @@ def main():
         for instruction in instructions:
             new_instrucitons.append(dir_int_changer(instruction))
         output_file_writer(new_instrucitons, opc)
-
-            
-        
 
 main()
