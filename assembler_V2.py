@@ -225,17 +225,16 @@ def directions_changer(instructions, data, jumps):
                             instruction[1].pop(i)
                             instruction[1].insert(i, new_arg)
                         else:
-                            new_arg = data[1]
+                            new_arg = dat[1]
                             i = instruction[1].index(arg)
                             instruction[1].pop(i)
                             instruction[1].insert(i, new_arg)
     
-        elif 'J' in instruction[0]:
+        elif 'J' in instruction[0] :
             try: 
-                if jumps[instruction[1]]:
-                    arg = jumps[instruction[1]]
-                    instruction.pop(1)
-                    instruction.append(str(arg))
+                arg = jumps[instruction[1]]
+                instruction.pop(1)
+                instruction.append(str(arg))
             except:
                 pass
         
@@ -262,12 +261,13 @@ def directions_changer(instructions, data, jumps):
 def main():
     errors = 0
     opc = opcodes()
-    instructions, data = text_reader('p3_1-correccion1.ass')
+    instructions, data = text_reader('P1_G21 - copia.ass')
     jumps = jump_dic(instructions)
     directions_changer(instructions, data, jumps)
     len_instructions = len(instructions)
     count = 1
     for instruction in instructions:
+        #print(f' inea {count} ->{instruction}')
         instruction_validation = instruction_validator(instruction, len_instructions, opc)
         if instruction_validation != True:
             print(f'Error en la linea {count} ->{instruction_validation}')
@@ -278,5 +278,6 @@ def main():
         for instruction in instructions:
             new_instrucitons.append(dir_int_changer(instruction))
         output_file_writer(new_instrucitons, opc)
+        print('Archivo creado con exito!')
 
 main()

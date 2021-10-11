@@ -5,7 +5,7 @@ Created on Mon Oct 11 17:34:08 2021
 @author: lucaz
 """
 import re 
-file = open('p3F_1.ass')
+file = open('P1_G21 - copia.ass')
 lines = file.readlines()
 data = []
 instructions = []
@@ -54,26 +54,24 @@ for instruction in instructions:
             arg = re.sub('\(|\)', '', arg)
             
             for dat in data:
-                
                 if dat[0] == arg:
                     if direction == True:
                         new_arg = '('+dat[1]+')'
                         instruction[1].pop(i)
                         instruction[1].insert(i, new_arg)
                     else:
-                        new_arg = data[1]
+                        new_arg = dat[1]
                         i = instruction[1].index(arg)
                         instruction[1].pop(i)
                         instruction[1].insert(i, new_arg)
    
-    elif 'J' in instruction[0]:
+    elif 'J' in instruction[0] or 'CEQ' in instruction[0]:
         arg = jumps[instruction[1]]
         instruction.pop(1)
         instruction.append(arg)
     
     else:
         arg = instruction[1]
-        print(arg)
         if '(' in arg:
             direction = True
         arg = re.sub('\(|\)', '', arg)
