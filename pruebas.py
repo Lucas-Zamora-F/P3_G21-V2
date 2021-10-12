@@ -5,7 +5,7 @@ Created on Mon Oct 11 17:34:08 2021
 @author: lucaz
 """
 import re 
-file = open('P1_G21 - copia.ass')
+file = open('p3F_1.ass')
 lines = file.readlines()
 data = []
 instructions = []
@@ -90,10 +90,40 @@ for instruction in instructions:
                     instruction.insert(1, new_arg)
                     
                     
+
+literal_list = []
+for instruction in instructions:
+    arg = 0
+    if type(instruction[1]) is list:
+        for arg in instruction[1]:
+            print(arg)
+            if '#' in arg and '(' not in arg:
+                string = arg.replace("#", "")
+                arg = int(string, 16)
+            else:
+                try:
+                    arg = int(arg)
+                except:
+                    arg = 0
+                    pass
+        
+    else:
+        try:
+            arg = int(instruction[1]) 
+        except:
+            arg = 0
+            pass
+        
+            
+    if int(arg) < 256:
+        binary = str(format(arg,'b'))
+        while len(binary) < 8:
+            binary = '0'+binary
+        
+    else:
+        binary = '00000000'
                     
-                    
-                    
-                    
+    literal_list.append(binary)
                     
                     
                     

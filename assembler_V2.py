@@ -83,13 +83,13 @@ def opcodes():
     return dic_ins
 
 def instruction_validator (instruction, len_instuctions, opc):
-
+    #print(f'instruccion inicial : {instruction}')
     # RET instruction
     ins_trans = instruction[0]+' '
     if instruction[0] == 'RET':
         if len(instruction) != 1:
             arg = ','.join(instruction[1])
-            return f'Instruccion invalida: {ins_trans}{arg}' 
+            return f'Instruccion invalida: {ins_trans}{arg} (92)' 
         if len(instruction) == 1:
             return True  
 
@@ -111,13 +111,13 @@ def instruction_validator (instruction, len_instuctions, opc):
     # number of arguments
     if instruction[0] == 'INC':
         if len(instruction[1]) != 1 and '(' not in instruction[1] :
-            return f'Instruccion invalida (Cantidad de argumentos): {ins_trans}{arg}'
+            return f'Instruccion invalida (Cantidad de argumentos): {ins_trans}{arg} (114)'
     if instruction[0] == 'MOV' or instruction[0] == 'CMP':
         if len(instruction[1]) != 2:
-            return f'Instruccion invalida (Cantidad de argumentos): {ins_trans}{arg}'
+            return f'Instruccion invalida (Cantidad de argumentos): {ins_trans}{arg} (116)'
     
     if len(instruction[1]) > 2 and type(instruction[1]) is list:
-        return f'Instruccion invalida (Cantidad de argumentos): {ins_trans}{arg}'
+        return f'Instruccion invalida (Cantidad de argumentos): {ins_trans}{arg} (119)'
     
     # Add Literals and dir.
     if '(' in instruction[1]:
@@ -129,20 +129,30 @@ def instruction_validator (instruction, len_instuctions, opc):
                 instruction.pop(1)
                 instruction.insert(1, '(B)')
         else:
-            return 'No existe direccionamiento a través del registro A'
+            return 'No existe direccionamiento a través del registro A (132)'
+            
+    #print(f'instruccion 1 : {instruction}')
+
     if type(instruction[1]) is list:
         for i in range(len(instruction[1])):
             if instruction[1][i] != 'A' and instruction[1][i] != 'B':
                 if  '(' in instruction[1][i] and '(A)' != instruction[1][i] and '(B)' != instruction[1][i]:
-                    if instruction[1][i] != '(A)':
+                    if '(B)' == instruction[1][i]:
+                        pass
+                    elif instruction[1][i] != '(A)':
                         instruction[1].pop(i)
                         instruction[1].insert(i, '(Dir)') 
+
                     else:
-                        return 'No existe direccionamiento a través del registro A'
+                        return 'No existe direccionamiento a través del registro A (147)'
+                elif instruction[1][i] == '(B)':
+                    pass
                 else:
                     instruction[1].pop(i)
                     instruction[1].insert(i, 'Lit') 
-    
+
+    #print(f'instruccion 2 : {instruction}')
+
     #JUMP
     if 'J' in instruction[0]:
         arg = instruction[1]
@@ -155,24 +165,32 @@ def instruction_validator (instruction, len_instuctions, opc):
         if '#' in arg or number == True:
             arg = hex_to_dec(arg)
             if arg > len_instuctions:
-                return f'Direccion fuera de rango: {ins_trans}{instruction[1]}'
+                return f'Direccion fuera de rango: {ins_trans}{instruction[1]} (168)'
         else:
-            return f'Direccion no valida: {ins_trans}{instruction[1]}'
+            return f'Direccion no valida: {ins_trans}{instruction[1]} (170)'
         if number == True:
             instruction.pop(1)
             instruction.insert(1, '(Dir)')
 
+    #print(f'instruccion 3 : {instruction}')
+
     #Operations Chek
-    if '#' not in instruction[1] and 'D' not in instruction[1] and '(B)' not in instruction[1]:
+    if '(B)' == instruction[1]:
+        arg = '(B)' 
+    elif '#' not in instruction[1] and 'D' not in instruction[1] :
         arg = ','.join(instruction[1])
     else:
         arg = '(Dir)'
     ins_trans += arg
     
+    #print(f'instruccion 4 : {instruction}')
+    #print(ins_trans)
     if ins_trans in opc.keys():
         return True
     else:
-        return f'Instruccion no existe: {ins_trans}'
+        return f'Instruccion no existe: {ins_trans} (191)'
+    
+    
 
 def dir_int_changer(instruction):
     if 'J' in instruction[0]:
@@ -181,20 +199,25 @@ def dir_int_changer(instruction):
     if '(' in instruction[1] and '(A)' != instruction[1] and '(B)' != instruction[1]:
         instruction.pop(1)
         instruction.insert(1, '(Dir)')
+    
     if type(instruction[1]) is list:
         for i in range(len(instruction[1])):
             if instruction[1][i] != 'A' and instruction[1][i] != 'B':
                 if '(' in instruction[1][i] and '(A)' != instruction[1][i] and '(B)' != instruction[1][i]:
                     instruction[1].pop(i)
                     instruction[1].insert(i, '(Dir)') 
+                elif '(B)' == instruction[1][i]:
+                    pass
                 else:
                     instruction[1].pop(i)
                     instruction[1].insert(i, 'Lit') 
     return instruction
 
-def output_file_writer(new_instrucitons, opc):
+def output_file_writer(new_instrucitons, opc, lit_list):
     file = open('out.out', 'w')
+    i = 0
     for instruction in new_instrucitons:
+        #print(instruction)
         ins_trans = instruction[0]+' '
         if type(instruction[1]) is list :
             arg = ','.join(instruction[1])
@@ -202,14 +225,14 @@ def output_file_writer(new_instrucitons, opc):
             arg = instruction[1]
         
         ins_trans += arg
-        file.write(opc[ins_trans])
+        file.write(str(opc[ins_trans])+str(lit_list[i]))
         file.write("\n")
+        i += 1
     file.close()
 
 def directions_changer(instructions, data, jumps):
     for instruction in instructions:
         direction = False
-        
         if type(instruction[1]) is list:
             for arg in instruction[1]:
                 i = instruction[1].index(arg)
@@ -256,14 +279,55 @@ def directions_changer(instructions, data, jumps):
                         i = instruction.index(arg)
                         instruction.pop(1)
                         instruction.insert(1, new_arg)
+def literal_list_generator (instructions):
+    literal_list = []
+    for instruction in instructions:
+        
+        arg = 0
+        #print(f'instruction litral list {instruction}')
+        if type(instruction[1]) is list:
+            for arg in instruction[1]:
+                if '#' in arg and '(' not in arg:
+                    string = arg.replace("#", "")
+                    arg = int(string, 16)
+                else:
+                    try:
+                        arg = int(arg)
+                    except:
+                        arg = 0
+                        pass
+            
+        else:
+            try:
+                arg = int(instruction[1]) 
+            except:
+                arg = 0
+                pass
+            
+                
+        if int(arg) < 256:
+            binary = str(format(arg,'b'))
+            while len(binary) < 8:
+                binary = '0'+binary
+            
+        else:
+            binary = '00000000'
+        literal_list.append(binary)  
 
+    return literal_list
 
+    
 def main():
     errors = 0
     opc = opcodes()
-    instructions, data = text_reader('P1_G21 - copia.ass')
+    instructions, data = text_reader('p3_1-correccion1.ass')
+    #print(f'Punto 1: {instructions}')
     jumps = jump_dic(instructions)
+    #print('jumps:', jumps)
     directions_changer(instructions, data, jumps)
+    lit_list = literal_list_generator(instructions)
+    #print(lit_list)
+    #print(f'Punto 2: {instructions}')
     len_instructions = len(instructions)
     count = 1
     for instruction in instructions:
@@ -273,11 +337,12 @@ def main():
             print(f'Error en la linea {count} ->{instruction_validation}')
             errors += 1
         count += 1
+    #print(f'Punto 3: {instructions}')
     if errors == 0:
         new_instrucitons = []
         for instruction in instructions:
             new_instrucitons.append(dir_int_changer(instruction))
-        output_file_writer(new_instrucitons, opc)
+        output_file_writer(new_instrucitons, opc, lit_list)
         print('Archivo creado con exito!')
 
 main()
