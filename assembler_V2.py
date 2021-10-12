@@ -216,6 +216,7 @@ def dir_int_changer(instruction):
 def output_file_writer(new_instrucitons, opc, lit_list):
     file = open('out.out', 'w')
     i = 0
+    print('.OUT: ')
     for instruction in new_instrucitons:
         #print(instruction)
         ins_trans = instruction[0]+' '
@@ -225,6 +226,7 @@ def output_file_writer(new_instrucitons, opc, lit_list):
             arg = instruction[1]
         
         ins_trans += arg
+        print(str(opc[ins_trans])+str(lit_list[i]))
         file.write(str(opc[ins_trans])+str(lit_list[i]))
         file.write("\n")
         i += 1
@@ -320,7 +322,7 @@ def literal_list_generator (instructions):
 def main():
     errors = 0
     opc = opcodes()
-    instructions, data = text_reader('p3_1-correccion1.ass')
+    instructions, data = text_reader('p3F_1.ass')
     #print(f'Punto 1: {instructions}')
     jumps = jump_dic(instructions)
     #print('jumps:', jumps)
@@ -339,6 +341,7 @@ def main():
         count += 1
     #print(f'Punto 3: {instructions}')
     if errors == 0:
+        print('data:', data)
         new_instrucitons = []
         for instruction in instructions:
             new_instrucitons.append(dir_int_changer(instruction))
