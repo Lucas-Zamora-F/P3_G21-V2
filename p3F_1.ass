@@ -1,8 +1,8 @@
 DATA:
   lista #A0
-  n 5
-  res 0
-  aux 0
+  n 1
+  res 2
+  aux 3
 CODE:
 siguiente:
   MOV B,(lista)

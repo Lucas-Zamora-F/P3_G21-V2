@@ -190,8 +190,6 @@ def instruction_validator (instruction, len_instuctions, opc):
     else:
         return f'Instruccion no existe: {ins_trans} (191)'
     
-    
-
 def dir_int_changer(instruction):
     if 'J' in instruction[0]:
         instruction.pop(1)
@@ -234,6 +232,7 @@ def output_file_writer(new_instrucitons, opc, lit_list):
 
 def directions_changer(instructions, data, jumps):
     for instruction in instructions:
+        #print(instruction)
         direction = False
         if type(instruction[1]) is list:
             for arg in instruction[1]:
@@ -281,6 +280,7 @@ def directions_changer(instructions, data, jumps):
                         i = instruction.index(arg)
                         instruction.pop(1)
                         instruction.insert(1, new_arg)
+
 def literal_list_generator (instructions):
     literal_list = []
     for instruction in instructions:
@@ -307,7 +307,7 @@ def literal_list_generator (instructions):
                 pass
             
                 
-        if int(arg) < 256:
+        if int(arg) < 256 :
             binary = str(format(arg,'b'))
             while len(binary) < 8:
                 binary = '0'+binary
@@ -318,11 +318,10 @@ def literal_list_generator (instructions):
 
     return literal_list
 
-    
 def main():
     errors = 0
     opc = opcodes()
-    instructions, data = text_reader('p3F_1.ass')
+    instructions, data = text_reader('p3_2-correccion2.ass')
     #print(f'Punto 1: {instructions}')
     jumps = jump_dic(instructions)
     #print('jumps:', jumps)
@@ -341,7 +340,7 @@ def main():
         count += 1
     #print(f'Punto 3: {instructions}')
     if errors == 0:
-        print('data:', data)
+        #print('data:', data)
         new_instrucitons = []
         for instruction in instructions:
             new_instrucitons.append(dir_int_changer(instruction))

@@ -4,12 +4,14 @@ Created on Mon Oct 11 17:34:08 2021
 
 @author: lucaz
 """
+'''''
 import re 
 file = open('p3F_1.ass')
 lines = file.readlines()
 data = []
 instructions = []
 is_data = False
+is_code = True
 for line in lines:
     if 'DATA:' in line:
         is_data = True
@@ -125,9 +127,9 @@ for instruction in instructions:
                     
     literal_list.append(binary)
                     
-                    
-                    
-                    
+'''               
+
+print(int('(3)'))               
                     
                     
                     
