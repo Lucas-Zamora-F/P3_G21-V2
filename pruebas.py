@@ -131,7 +131,143 @@ for instruction in instructions:
 
 print(int('(3)'))               
                     
-                    
+    while True:
+        instruction = instructions[pc]
+        if instruction[0] == 'MOV':
+            #basic
+            if instruction[1][0] == 'A' and instruction[1][1] == 'B':
+                a = b
+            elif instruction[1][0] == 'B' and instruction[1][1] == 'A':
+                b = a
+            elif instruction[1][0] == 'A' and instruction[1][1] != 'B' and '(' not in instruction[1][1]:
+                a = instruction[1][1]
+            elif instruction[1][0] == 'B' and instruction[1][1] != 'A' and '(' not in instruction[1][1]:
+                b = instruction[1][1]
+            #Dir
+
+        elif instruction[0] == 'ADD':
+            #basic
+            if instruction[1][0] == 'A' and instruction[1][1] == 'B':
+                a = int(a)+int(b)
+            elif instruction[1][0] == 'B' and instruction[1][1] == 'A':
+                b = int(a)+int(b)
+            elif instruction[1][0] == 'A' and instruction[1][1] != 'B' and '(' not in instruction[1][1]:
+                a = int(a)+int(instruction[1][1])
+            elif instruction[1][0] == 'B' and instruction[1][1] != 'A' and '(' not in instruction[1][1]:
+                b = int(b)+int(instruction[1][1])
+        elif instruction[0] == 'ADD':
+            #basic
+            if instruction[1][0] == 'A' and instruction[1][1] == 'B':
+                a = b
+            elif instruction[1][0] == 'B' and instruction[1][1] == 'A':
+                b = a
+            elif instruction[1][0] == 'A' and instruction[1][1] != 'B' and '(' not in instruction[1][1]:
+                a = instruction[1][1]
+            elif instruction[1][0] == 'B' and instruction[1][1] != 'A' and '(' not in instruction[1][1]:
+                b = instruction[1][1]
+        elif instruction[0] == 'SUB':
+            #basic
+            if instruction[1][0] == 'A' and instruction[1][1] == 'B':
+                a = b
+            elif instruction[1][0] == 'B' and instruction[1][1] == 'A':
+                b = a
+            elif instruction[1][0] == 'A' and instruction[1][1] != 'B' and '(' not in instruction[1][1]:
+                a = instruction[1][1]
+            elif instruction[1][0] == 'B' and instruction[1][1] != 'A' and '(' not in instruction[1][1]:
+                b = instruction[1][1]
+        elif instruction[0] == 'AND':
+            #basic
+            if instruction[1][0] == 'A' and instruction[1][1] == 'B':
+                a = b
+            elif instruction[1][0] == 'B' and instruction[1][1] == 'A':
+                b = a
+            elif instruction[1][0] == 'A' and instruction[1][1] != 'B' and '(' not in instruction[1][1]:
+                a = instruction[1][1]
+            elif instruction[1][0] == 'B' and instruction[1][1] != 'A' and '(' not in instruction[1][1]:
+                b = instruction[1][1]
+        elif instruction[0] == 'OR':
+            #basic
+            if instruction[1][0] == 'A' and instruction[1][1] == 'B':
+                a = b
+            elif instruction[1][0] == 'B' and instruction[1][1] == 'A':
+                b = a
+            elif instruction[1][0] == 'A' and instruction[1][1] != 'B' and '(' not in instruction[1][1]:
+                a = instruction[1][1]
+            elif instruction[1][0] == 'B' and instruction[1][1] != 'A' and '(' not in instruction[1][1]:
+                b = instruction[1][1]
+        elif instruction[0] == 'NOT':
+            #basic
+            if instruction[1][0] == 'A' and instruction[1][1] == 'B':
+                a = b
+            elif instruction[1][0] == 'B' and instruction[1][1] == 'A':
+                b = a
+            elif instruction[1][0] == 'A' and instruction[1][1] != 'B' and '(' not in instruction[1][1]:
+                a = instruction[1][1]
+            elif instruction[1][0] == 'B' and instruction[1][1] != 'A' and '(' not in instruction[1][1]:
+                b = instruction[1][1]
+        elif instruction[0] == 'XOR':
+            #basic
+            if instruction[1][0] == 'A' and instruction[1][1] == 'B':
+                a = b
+            elif instruction[1][0] == 'B' and instruction[1][1] == 'A':
+                b = a
+            elif instruction[1][0] == 'A' and instruction[1][1] != 'B' and '(' not in instruction[1][1]:
+                a = instruction[1][1]
+            elif instruction[1][0] == 'B' and instruction[1][1] != 'A' and '(' not in instruction[1][1]:
+                b = instruction[1][1]
+        elif instruction[0] == 'SHL':
+            #basic
+            if instruction[1][0] == 'A' and instruction[1][1] == 'B':
+                a = b
+            elif instruction[1][0] == 'B' and instruction[1][1] == 'A':
+                b = a
+            elif instruction[1][0] == 'A' and instruction[1][1] != 'B' and '(' not in instruction[1][1]:
+                a = instruction[1][1]
+            elif instruction[1][0] == 'B' and instruction[1][1] != 'A' and '(' not in instruction[1][1]:
+                b = instruction[1][1]
+        elif instruction[0] == 'SHR':
+            #basic
+            if instruction[1][0] == 'A' and instruction[1][1] == 'B':
+                a = b
+            elif instruction[1][0] == 'B' and instruction[1][1] == 'A':
+                b = a
+            elif instruction[1][0] == 'A' and instruction[1][1] != 'B' and '(' not in instruction[1][1]:
+                a = instruction[1][1]
+            elif instruction[1][0] == 'B' and instruction[1][1] != 'A' and '(' not in instruction[1][1]:
+                b = instruction[1][1]
+        elif instruction[0] == 'INC':
+            #basic
+            elif instruction[1][0] == 'B':
+                b = int(b) + 1
+            
+        elif instruction[0] == 'RST':
+            #basic
+            if instruction[1][0] == 'A' and instruction[1][1] == 'B':
+                a = b
+            elif instruction[1][0] == 'B' and instruction[1][1] == 'A':
+                b = a
+            elif instruction[1][0] == 'A' and instruction[1][1] != 'B' and '(' not in instruction[1][1]:
+                a = instruction[1][1]
+            elif instruction[1][0] == 'B' and instruction[1][1] != 'A' and '(' not in instruction[1][1]:
+                b = instruction[1][1]
+        elif instruction[0] == 'CMP':
+            #basic
+            if instruction[1][0] == 'A' and instruction[1][1] == 'B':
+                a = b
+            elif instruction[1][0] == 'B' and instruction[1][1] == 'A':
+                b = a
+            elif instruction[1][0] == 'A' and instruction[1][1] != 'B' and '(' not in instruction[1][1]:
+                a = instruction[1][1]
+            elif instruction[1][0] == 'B' and instruction[1][1] != 'A' and '(' not in instruction[1][1]:
+                b = instruction[1][1]
+        elif instruction[0] == 'JMP':
+        elif instruction[0] == 'JEQ':
+        elif instruction[0] == 'JNE':
+        elif instruction[0] == 'JGT':
+        elif instruction[0] == 'JLT':
+        elif instruction[0] == 'JGE':
+        elif instruction[0] == 'JCR':
+        elif instruction[0] == 'JOV':                   
                     
                     
                     

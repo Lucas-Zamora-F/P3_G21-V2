@@ -109,8 +109,9 @@ def dir_int_changer(instruction):
             instruction.insert(1, 'Lit')
     return instruction
 
-def output_file_writer(new_instrucitons, opc, lit_list):
-    file = open('out.out', 'w')
+def output_file_writer(new_instrucitons, opc, lit_list, file_name):
+    out_name = file_name + '.out'
+    file = open(out_name, 'w')
     i = 0
     print('.OUT: ')
     for instruction in new_instrucitons:
@@ -227,9 +228,11 @@ def jumps_direction_changer(instruction, jumps):
 
 def literal_list_generator (instructions):
     literal_list = []
+    out_of_range = False
+    literal_out = 'None'
     for instruction in instructions:
-        print(instruction)
         arg = 0
+        print('instrucion:', instruction)
         if type(instruction[1]) is list:
             for arg in instruction[1]:
                 if '#' in arg and '(' not in arg:
@@ -264,7 +267,11 @@ def literal_list_generator (instructions):
                     arg = new_arg
                 except:
                     arg = 0
-                    pass   
+                    pass  
+        elif '#' in instruction[1] and '(' not in instruction[1]:
+            arg = instruction[1]
+            string = arg.replace("#", "")
+            arg = int(string, 16)
         else:
             try:
                 arg = int(instruction[1]) 
@@ -272,7 +279,6 @@ def literal_list_generator (instructions):
                 arg = 0
                 pass
             
-        print(arg)
         if int(arg) < 256 and int(arg) >= 0 :
             binary = str(format(arg,'b'))
             while len(binary) < 8:
@@ -284,159 +290,13 @@ def literal_list_generator (instructions):
                 binary = '0'+binary
         else:
             binary = 'out_of_range'
+            out_of_range = True
+            literal_out = instruction
         
         literal_list.append(binary)  
 
-    return literal_list
-'''
-def data_direction_changer(instructions, data):
-    a = 0
-    b  = 0   
-    auxiliary_variable = 0
-    pc = 0
-    while True:
-        instruction = instructions[pc]
-        if instruction[0] == 'MOV':
-            #basic
-            if instruction[1][0] == 'A' and instruction[1][1] == 'B':
-                a = b
-            elif instruction[1][0] == 'B' and instruction[1][1] == 'A':
-                b = a
-            elif instruction[1][0] == 'A' and instruction[1][1] != 'B' and '(' not in instruction[1][1]:
-                a = instruction[1][1]
-            elif instruction[1][0] == 'B' and instruction[1][1] != 'A' and '(' not in instruction[1][1]:
-                b = instruction[1][1]
-            #Dir
+    return literal_list, out_of_range, literal_out
 
-        elif instruction[0] == 'ADD':
-            #basic
-            if instruction[1][0] == 'A' and instruction[1][1] == 'B':
-                a = int(a)+int(b)
-            elif instruction[1][0] == 'B' and instruction[1][1] == 'A':
-                b = int(a)+int(b)
-            elif instruction[1][0] == 'A' and instruction[1][1] != 'B' and '(' not in instruction[1][1]:
-                a = int(a)+int(instruction[1][1])
-            elif instruction[1][0] == 'B' and instruction[1][1] != 'A' and '(' not in instruction[1][1]:
-                b = int(b)+int(instruction[1][1])
-        elif instruction[0] == 'ADD':
-            #basic
-            if instruction[1][0] == 'A' and instruction[1][1] == 'B':
-                a = b
-            elif instruction[1][0] == 'B' and instruction[1][1] == 'A':
-                b = a
-            elif instruction[1][0] == 'A' and instruction[1][1] != 'B' and '(' not in instruction[1][1]:
-                a = instruction[1][1]
-            elif instruction[1][0] == 'B' and instruction[1][1] != 'A' and '(' not in instruction[1][1]:
-                b = instruction[1][1]
-        elif instruction[0] == 'SUB':
-            #basic
-            if instruction[1][0] == 'A' and instruction[1][1] == 'B':
-                a = b
-            elif instruction[1][0] == 'B' and instruction[1][1] == 'A':
-                b = a
-            elif instruction[1][0] == 'A' and instruction[1][1] != 'B' and '(' not in instruction[1][1]:
-                a = instruction[1][1]
-            elif instruction[1][0] == 'B' and instruction[1][1] != 'A' and '(' not in instruction[1][1]:
-                b = instruction[1][1]
-        elif instruction[0] == 'AND':
-            #basic
-            if instruction[1][0] == 'A' and instruction[1][1] == 'B':
-                a = b
-            elif instruction[1][0] == 'B' and instruction[1][1] == 'A':
-                b = a
-            elif instruction[1][0] == 'A' and instruction[1][1] != 'B' and '(' not in instruction[1][1]:
-                a = instruction[1][1]
-            elif instruction[1][0] == 'B' and instruction[1][1] != 'A' and '(' not in instruction[1][1]:
-                b = instruction[1][1]
-        elif instruction[0] == 'OR':
-            #basic
-            if instruction[1][0] == 'A' and instruction[1][1] == 'B':
-                a = b
-            elif instruction[1][0] == 'B' and instruction[1][1] == 'A':
-                b = a
-            elif instruction[1][0] == 'A' and instruction[1][1] != 'B' and '(' not in instruction[1][1]:
-                a = instruction[1][1]
-            elif instruction[1][0] == 'B' and instruction[1][1] != 'A' and '(' not in instruction[1][1]:
-                b = instruction[1][1]
-        elif instruction[0] == 'NOT':
-            #basic
-            if instruction[1][0] == 'A' and instruction[1][1] == 'B':
-                a = b
-            elif instruction[1][0] == 'B' and instruction[1][1] == 'A':
-                b = a
-            elif instruction[1][0] == 'A' and instruction[1][1] != 'B' and '(' not in instruction[1][1]:
-                a = instruction[1][1]
-            elif instruction[1][0] == 'B' and instruction[1][1] != 'A' and '(' not in instruction[1][1]:
-                b = instruction[1][1]
-        elif instruction[0] == 'XOR':
-            #basic
-            if instruction[1][0] == 'A' and instruction[1][1] == 'B':
-                a = b
-            elif instruction[1][0] == 'B' and instruction[1][1] == 'A':
-                b = a
-            elif instruction[1][0] == 'A' and instruction[1][1] != 'B' and '(' not in instruction[1][1]:
-                a = instruction[1][1]
-            elif instruction[1][0] == 'B' and instruction[1][1] != 'A' and '(' not in instruction[1][1]:
-                b = instruction[1][1]
-        elif instruction[0] == 'SHL':
-            #basic
-            if instruction[1][0] == 'A' and instruction[1][1] == 'B':
-                a = b
-            elif instruction[1][0] == 'B' and instruction[1][1] == 'A':
-                b = a
-            elif instruction[1][0] == 'A' and instruction[1][1] != 'B' and '(' not in instruction[1][1]:
-                a = instruction[1][1]
-            elif instruction[1][0] == 'B' and instruction[1][1] != 'A' and '(' not in instruction[1][1]:
-                b = instruction[1][1]
-        elif instruction[0] == 'SHR':
-            #basic
-            if instruction[1][0] == 'A' and instruction[1][1] == 'B':
-                a = b
-            elif instruction[1][0] == 'B' and instruction[1][1] == 'A':
-                b = a
-            elif instruction[1][0] == 'A' and instruction[1][1] != 'B' and '(' not in instruction[1][1]:
-                a = instruction[1][1]
-            elif instruction[1][0] == 'B' and instruction[1][1] != 'A' and '(' not in instruction[1][1]:
-                b = instruction[1][1]
-        elif instruction[0] == 'INC':
-            #basic
-            if instruction[1][0] == 'A' and instruction[1][1] == 'B':
-                a = b
-            elif instruction[1][0] == 'B' and instruction[1][1] == 'A':
-                b = a
-            elif instruction[1][0] == 'A' and instruction[1][1] != 'B' and '(' not in instruction[1][1]:
-                a = instruction[1][1]
-            elif instruction[1][0] == 'B' and instruction[1][1] != 'A' and '(' not in instruction[1][1]:
-                b = instruction[1][1]
-        elif instruction[0] == 'RST':
-            #basic
-            if instruction[1][0] == 'A' and instruction[1][1] == 'B':
-                a = b
-            elif instruction[1][0] == 'B' and instruction[1][1] == 'A':
-                b = a
-            elif instruction[1][0] == 'A' and instruction[1][1] != 'B' and '(' not in instruction[1][1]:
-                a = instruction[1][1]
-            elif instruction[1][0] == 'B' and instruction[1][1] != 'A' and '(' not in instruction[1][1]:
-                b = instruction[1][1]
-        elif instruction[0] == 'CMP':
-            #basic
-            if instruction[1][0] == 'A' and instruction[1][1] == 'B':
-                a = b
-            elif instruction[1][0] == 'B' and instruction[1][1] == 'A':
-                b = a
-            elif instruction[1][0] == 'A' and instruction[1][1] != 'B' and '(' not in instruction[1][1]:
-                a = instruction[1][1]
-            elif instruction[1][0] == 'B' and instruction[1][1] != 'A' and '(' not in instruction[1][1]:
-                b = instruction[1][1]
-        elif instruction[0] == 'JMP':
-        elif instruction[0] == 'JEQ':
-        elif instruction[0] == 'JNE':
-        elif instruction[0] == 'JGT':
-        elif instruction[0] == 'JLT':
-        elif instruction[0] == 'JGE':
-        elif instruction[0] == 'JCR':
-        elif instruction[0] == 'JOV':
-'''    
 def data_direction_changer(instructions, data):
     for instruction in instructions:
         #print(instruction)
@@ -447,19 +307,19 @@ def data_direction_changer(instructions, data):
                 if '(' in arg:
                     direction = True
                 arg = re.sub('\(|\)', '', arg)
-                
                 for dat in data:
-                    
                     if dat[0] == arg:
                         if direction == True:
-                            new_arg = '('+dat[1]+')'
-                            instruction[1].pop(i)
-                            instruction[1].insert(i, new_arg)
+                            for a in range(len(data)):
+                                if arg in data[a]:
+                                    instruction[1].pop(i)
+                                    instruction[1].insert(i, '('+str(a)+')')
                         else:
                             new_arg = dat[1]
                             i = instruction[1].index(arg)
                             instruction[1].pop(i)
                             instruction[1].insert(i, new_arg)
+                    
         else:
             arg = instruction[1]
             if '(' in arg:
@@ -470,9 +330,10 @@ def data_direction_changer(instructions, data):
                     
                 if dat[0] == arg:
                     if direction == True:
-                        new_arg = '('+dat[1]+')'
-                        instruction.pop(1)
-                        instruction.insert(1, new_arg)
+                       for a in range(len(data)):
+                            if arg in data[a]:
+                                instruction.pop(1)
+                                instruction.insert(1, '('+str(a)+')')
                     else:
                         new_arg = data[1]
                         i = instruction.index(arg)
@@ -480,8 +341,72 @@ def data_direction_changer(instructions, data):
                         instruction.insert(1, new_arg)
     return instructions
 
+def memory_file (data, file_name):
+    mem_out = file_name + '.mem'
+    file = open(mem_out, 'w')
+    for line in data:
+        if '#' in line[1]:
+            arg = line[1]
+            string = arg.replace("#", "")
+            arg = int(string, 16)
+        try:
+            arg = int(line[1])
+        except:
+            pass
+
+        binary = str(format(arg,'b'))
+        while len(binary) < 8:
+            binary = '0'+binary
+        file.write(binary)
+        file.write("\n")
+
+def undeclared_variable_detector (instructions, data):
+    for instruction in instructions:
+        if type(instruction[1]) is list:
+            is_number = 0
+            in_data = False
+            for arg in instruction[1]:
+                try:
+                    if '(' in arg:
+                        arg = re.sub('\(|\)', '', arg)
+                    int(arg)
+                    is_number = 1
+                except:
+                    pass
+                if arg != 'A' and arg != 'B' and arg != '(B)' and is_number == 0 and '#' not in arg:
+                    if '(' in arg:
+                        arg = re.sub('\(|\)', '', arg)
+                    for dat in data:
+                        if dat[0] == arg:
+                            in_data = True
+                    if in_data == False:
+                        return False, arg
+        else:
+            arg = instruction[1]
+            is_number = 0
+            in_data = False
+            try:
+                if '(' in arg:
+                        arg = re.sub('\(|\)', '', arg)
+                int(arg)
+                is_number = 1
+            except:
+                pass
+            if arg != 'A' and arg != 'B' and arg != '(B)' and is_number == 0 and '#' not in arg:
+                if '(' in arg:
+                    arg = re.sub('\(|\)', '', arg)
+                for dat in data:
+                    if dat[0] == arg:
+                        in_data = True
+                if in_data == False:
+                    return False , arg
+    return True, 'none'
+
 def main(operations):
-    instructions, data = text_reader('p3F_1.ass')
+    file_name = 'EJEMPLO DE PRUEBA'
+    file_ass = file_name + '.ass'
+    instructions, data = text_reader(file_ass)
+    memory_file(data, file_name)
     jumps = jump_dic(instructions)
     opc = opcodes(operations)
     instructions_copy = []
@@ -497,20 +422,36 @@ def main(operations):
             print(f'Error en la linea {count} ->{instruction_validation}')
             errors += 1
         count += 1
+    
     if errors == 0:
-        instructions, data = text_reader('p3F_1.ass')
+        instructions, data = text_reader(file_ass)
         #print(f'Linea 475: instruction = {instructions}')
         jumps = jump_dic(instructions)
+        
         for instruction in instructions:
             instruction = jumps_direction_changer(instruction, jumps)
-        #print(f'Linea 479: instruction = {instructions}')    
-        instructions = data_direction_changer(instructions, data)
-        #print(f'Linea 481: instruction = {instructions}')
-        literal_list = literal_list_generator (instructions)
-        for instruction in instructions:
-            instruction = dir_int_changer(instruction)
-        #print(f'Linea 485: instruction = {instructions}')
-        output_file_writer(instructions, opc, literal_list)
-        print('Archivo creado con exito!')
+        is_declared, argument = undeclared_variable_detector(instructions, data)
+        if is_declared == False:
+            print(f'Error, se utilizan variables no declaradas en el apartado Data: {argument}')
+        elif is_declared == True:
+            #print(f'Linea 479: instruction = {instructions}')    
+            instructions = data_direction_changer(instructions, data)
+            #print(f'Linea 481: instruction = {instructions}')
+            literal_list, out_of_range, literal_out = literal_list_generator (instructions)
+            if out_of_range == True:
+                print(f'Error, Un literal esta fuera del rango permitido {literal_out}') 
+            else: 
+                print(f'Data :')
+                for dat in data:
+                    print(dat)
+                print(f'Code :')
+                for instruction in instructions:
+                    print(instruction)
+
+                for instruction in instructions:
+                    instruction = dir_int_changer(instruction)
+                #print(f'Linea 485: instruction = {instructions}')
+                output_file_writer(instructions, opc, literal_list, file_name)
+                print('Archivo creado con exito!')
 
 main(operations)
