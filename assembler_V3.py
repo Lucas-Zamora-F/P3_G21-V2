@@ -33,6 +33,9 @@ def text_reader (text_name):
                 if ',' in line[1]:
                     line[1] = line[1].split(',')
             instructions.append(line)
+    for i in range(len(data)):
+        if len(data[i]) == 1:
+            data[i].append('0')
     return instructions, data
 
 def jump_dic (instructions):
@@ -148,7 +151,7 @@ def instruction_validator(instruction, len_instructions, opc, operations, jumps)
         #print(f'Linea 122: Se activa RET')
         if len(instruction) != 1:
             arg = ','.join(instruction[1])
-            return f'Instruccion invalida: {ins_trans}{arg} (150)' 
+            return f'Instruccion invalida: {ins_trans}{arg} (154)' 
         if len(instruction) == 1:
             return True 
     
@@ -160,25 +163,25 @@ def instruction_validator(instruction, len_instructions, opc, operations, jumps)
     if type(instruction[1]) is list:
         for argument in instruction[1]:
             if '(A)' in argument:
-                return f'No existe direccionamiento a través del registro A: {ins_trans}{arg} (162)'
+                return f'No existe direccionamiento a través del registro A: {ins_trans}{arg} (166)'
     else:
         if '(A)' in instruction[1]:
-            return f'No existe direccionamiento a través del registro A: {ins_trans}{arg} (165)'
+            return f'No existe direccionamiento a través del registro A: {ins_trans}{arg} (169)'
     
     #Number of arguments
     if len(instruction) != 2:
-        return f'Instruccion invalida (Cantidad de argumentos): {ins_trans}{arg} (169)'
+        return f'Instruccion invalida (Cantidad de argumentos): {ins_trans}{arg} (173)'
     if instruction[0] == 'INC':
         if len(instruction[1]) != 1 and '(' not in instruction[1] :
-            return f'Instruccion invalida (Cantidad de argumentos): {ins_trans}{arg} (172)'
+            return f'Instruccion invalida (Cantidad de argumentos): {ins_trans}{arg} (176)'
     if instruction[0] == 'MOV' or instruction[0] == 'CMP':
         if len(instruction[1]) != 2:
-            return f'Instruccion invalida (Cantidad de argumentos): {ins_trans}{arg} (1175)'
+            return f'Instruccion invalida (Cantidad de argumentos): {ins_trans}{arg} (179)'
     if len(instruction[1]) > 2 and type(instruction[1]) is list:
-        return f'Instruccion invalida (Cantidad de argumentos): {ins_trans}{arg} (177)'
+        return f'Instruccion invalida (Cantidad de argumentos): {ins_trans}{arg} (181)'
     if 'J' in instruction:
         if type(instruction[1]) is list:
-            return f'Instruccion invalida (Jump con más de un argumento): {ins_trans}{arg} (180)'
+            return f'Instruccion invalida (Jump con más de un argumento): {ins_trans}{arg} (184)'
     
     #Change Jumps Direction
     if 'J' in instruction[0]:
@@ -190,16 +193,16 @@ def instruction_validator(instruction, len_instructions, opc, operations, jumps)
         try:
             arg = int(arg)
             if arg > len_instructions:
-                return f'Direccion fuera de rango: {ins_trans}{instruction[1]} (192)'
+                return f'Direccion fuera de rango: {ins_trans}{instruction[1]} (196)'
         except:
             if '#' in arg:
                 arg = hex_to_dec(arg)
                 if arg > len_instructions:
-                    return f'Direccion fuera de rango: {ins_trans}{instruction[1]} (197)'
+                    return f'Direccion fuera de rango: {ins_trans}{instruction[1]} (201)'
             elif 'A' or 'B' in arg:
-                return f'No existen saltos con registros: {ins_trans}{arg} (199)'
+                return f'No existen saltos con registros: {ins_trans}{arg} (203)'
             else:
-                return f'Direccion no valida: {ins_trans}{instruction[1]} (201)'
+                return f'Direccion no valida: {ins_trans}{instruction[1]} (205)'
     
     #Add Literals and dir.
     #print(f'Linea 200: instruction = {instruction}')
@@ -214,7 +217,7 @@ def instruction_validator(instruction, len_instructions, opc, operations, jumps)
     if ins_to_chek in opc.keys():
         return True
     else:
-        return f'Instruccion no existe: {ins_to_chek} (216)'
+        return f'Instruccion no existe: {ins_to_chek} (220)'
 
 def jumps_direction_changer(instruction, jumps):
     #print(f'Linea 219: instruction = {instruction}')
